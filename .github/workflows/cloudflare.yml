@@ -12,10 +12,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4  # 更新到 v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4  # 更新到 v4
         with:
           node-version: 20
 
@@ -23,13 +23,16 @@ jobs:
         run: |
           touch wrangler.toml
           cat << 'EOF' > wrangler.toml
-          ${{secrets.WRANGLER_TOML}} 
+          ${{ secrets.WRANGLER_TOML }}
           EOF
 
-      - name: Install dependencies
+      - name: Install pnpm and dependencies
         run: |
           npm install -g pnpm
           pnpm install
+
+      - name: Install latest Wrangler
+        run: pnpm add -D wrangler@4  # 安装 Wrangler v4
 
       - name: Build project
         run: pnpm run build
@@ -37,7 +40,7 @@ jobs:
       - name: Deploy to Cloudflare
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
-        run: pnpm run wrangler deploy --config=wrangler.toml > /dev/null
+        run: pnpm wrangler deploy --config=wrangler.toml  # 去掉重定向，保留日志
 
       - name: Verify deployment
         run: |
@@ -46,5 +49,6 @@ jobs:
             echo "::warning::CF_WORKERS_DOMAIN is not set"
           else
             echo "Verifying deployment at https://$url/init"
-            curl -s -o /dev/null https://$url/init
+            curl -s -o /dev/null -w "%{http_code}" https://$url/init
+            echo "Deployment verification completed"
           fi
