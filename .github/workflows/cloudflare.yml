@@ -12,10 +12,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4  # 更新到 v4
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4  # 更新到 v4
+        uses: actions/setup-node@v4
         with:
           node-version: 20
 
@@ -32,7 +32,7 @@ jobs:
           pnpm install
 
       - name: Install latest Wrangler
-        run: pnpm add -D wrangler@4  # 安装 Wrangler v4
+        run: pnpm add -D wrangler@4 -w  # 添加 -w 参数
 
       - name: Build project
         run: pnpm run build
@@ -40,7 +40,7 @@ jobs:
       - name: Deploy to Cloudflare
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
-        run: pnpm wrangler deploy --config=wrangler.toml  # 去掉重定向，保留日志
+        run: pnpm wrangler deploy --config=wrangler.toml
 
       - name: Verify deployment
         run: |
