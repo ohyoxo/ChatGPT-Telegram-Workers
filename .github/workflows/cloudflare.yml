@@ -33,7 +33,7 @@ jobs:
         run: pnpm install
 
       - name: Install latest Wrangler
-        run: pnpm add -D wrangler@latest
+        run: pnpm add -D wrangler@latest -w
 
       - name: Build project
         run: pnpm run build
