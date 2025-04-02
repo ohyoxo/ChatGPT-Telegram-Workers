@@ -26,28 +26,18 @@ jobs:
           ${{secrets.WRANGLER_TOML}} 
           EOF
 
-      - name: Install pnpm
-        run: npm install -g pnpm
-
       - name: Install dependencies
-        run: pnpm install
-
-      - name: Install latest Wrangler
-        run: pnpm add -D wrangler@latest -w
+        run: |
+          npm install -g pnpm
+          pnpm install
 
       - name: Build project
         run: pnpm run build
 
-      - name: Check Wrangler version
-        run: pnpm exec wrangler --version
-
-      - name: Validate Wrangler config
-        run: pnpm exec wrangler config --check --config=wrangler.toml
-
       - name: Deploy to Cloudflare
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
-        run: pnpm exec wrangler deploy --config=wrangler.toml
+        run: pnpm run wrangler deploy --config=wrangler.toml > /dev/null
 
       - name: Verify deployment
         run: |
